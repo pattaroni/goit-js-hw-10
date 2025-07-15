@@ -23,9 +23,13 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     const userCurrentTime = Date.now();
-    if (userCurrentTime < selectedDates[0].getTime()) {
-      userSelectedDate = selectedDates[0].getTime();
+    if (!selectedDates.length) {
+      startButton.disabled = true;
+      startButton.style.cursor = 'not-allowed';
+      userSelectedDate = null;
+      return;
     }
+    userSelectedDate = selectedDates[0].getTime();
     if (userSelectedDate <= userCurrentTime) {
       startButton.disabled = true;
       startButton.style.cursor = 'not-allowed';
@@ -104,6 +108,7 @@ const addLeadingZero = () => {
 
 stopButton.addEventListener('click', () => {
   clearInterval(idTimer);
+  idTimer = null;
   [seconds, minutes, hours, days].forEach(item => {
     item.textContent = '00';
   });
@@ -111,4 +116,5 @@ stopButton.addEventListener('click', () => {
   startButton.style.cursor = 'pointer';
   inputDate.disabled = false;
   inputDate.style.cursor = 'pointer';
+  userSelectedDate = null;
 });
