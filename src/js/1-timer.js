@@ -4,6 +4,8 @@ import 'flatpickr/dist/flatpickr.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 let userSelectedDate = null;
 let idTimer = null;
 const inputDate = document.querySelector('#datetime-picker');

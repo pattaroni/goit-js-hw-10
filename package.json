@@ -17,6 +17,7 @@
   "author": "Oleksii Kyryk <kirikoleksiy112@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "flatpickr": "^4.6.13",
     "izitoast": "^1.4.0",
     "vite-plugin-full-reload": "^1.2.0",
