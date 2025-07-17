@@ -12,9 +12,9 @@ const inputDate = document.querySelector('#datetime-picker');
 const startButton = document.querySelector('[data-start]');
 const stopButton = document.querySelector('[data-stop]');
 const seconds = document.querySelector('[data-seconds]');
-const minutes = document.querySelector('[data-minutes');
-const hours = document.querySelector('[data-hours');
-const days = document.querySelector('[data-days');
+const minutes = document.querySelector('[data-minutes]');
+const hours = document.querySelector('[data-hours]');
+const days = document.querySelector('[data-days]');
 
 const options = {
   enableTime: true,
@@ -23,12 +23,6 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     const userCurrentTime = Date.now();
-    if (!selectedDates.length) {
-      startButton.disabled = true;
-      startButton.style.cursor = 'not-allowed';
-      userSelectedDate = null;
-      return;
-    }
     userSelectedDate = selectedDates[0].getTime();
     if (userSelectedDate <= userCurrentTime) {
       startButton.disabled = true;
@@ -43,15 +37,6 @@ const options = {
         timeout: 4000,
         close: false,
         progressBarColor: '#ffffff',
-        onOpening: function (instance, toast) {
-          const icon = toast.querySelector('.iziToast-icon');
-          if (icon) {
-            icon.style.cursor = 'pointer';
-            icon.addEventListener('click', () => {
-              iziToast.hide({}, toast);
-            });
-          }
-        },
       });
     } else {
       startButton.disabled = false;
@@ -74,22 +59,44 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
+if (userSelectedDate === null) {
+  startButton.disabled = true;
+  startButton.style.cursor = 'not-allowed';
+}
+
 startButton.addEventListener('click', () => {
+  if (idTimer !== null) return;
+  if (userSelectedDate < Date.now()) {
+    startButton.disabled = true;
+    startButton.style.cursor = 'not-allowed';
+    iziToast.error({
+      message: 'Please choose a date in the future',
+      backgroundColor: '#ff3b30',
+      messageColor: '#ffffff',
+      iconColor: '#ffffff',
+      icon: 'fa fa-times-circle',
+      position: 'topRight',
+      timeout: 4000,
+      close: false,
+      progressBarColor: '#ffffff',
+    });
+    return;
+  }
   const timerUpdate = () => {
     const remainingTime = userSelectedDate - Date.now();
     const convertedTime = convertMs(remainingTime);
     if (remainingTime > 0) {
-      seconds.textContent = convertedTime.seconds;
-      minutes.textContent = convertedTime.minutes;
-      hours.textContent = convertedTime.hours;
-      days.textContent = convertedTime.days;
+      seconds.textContent = addLeadingZero(convertedTime.seconds);
+      minutes.textContent = addLeadingZero(convertedTime.minutes);
+      hours.textContent = addLeadingZero(convertedTime.hours);
+      days.textContent = addLeadingZero(convertedTime.days);
       startButton.disabled = true;
       startButton.style.cursor = 'not-allowed';
       inputDate.disabled = true;
       inputDate.style.cursor = 'not-allowed';
-      addLeadingZero();
     } else {
       clearInterval(idTimer);
+      idTimer = null;
       startButton.disabled = false;
       startButton.style.cursor = 'pointer';
       inputDate.disabled = false;
@@ -100,10 +107,8 @@ startButton.addEventListener('click', () => {
   idTimer = setInterval(timerUpdate, 1000);
 });
 
-const addLeadingZero = () => {
-  [seconds, minutes, hours, days].forEach(item => {
-    item.textContent = item.textContent.padStart(2, '0');
-  });
+const addLeadingZero = value => {
+  return value.toString().padStart(2, '0');
 };
 
 stopButton.addEventListener('click', () => {
@@ -112,9 +117,10 @@ stopButton.addEventListener('click', () => {
   [seconds, minutes, hours, days].forEach(item => {
     item.textContent = '00';
   });
-  startButton.disabled = false;
-  startButton.style.cursor = 'pointer';
+  if (userSelectedDate > Date.now()) {
+    startButton.disabled = false;
+    startButton.style.cursor = 'pointer';
+  }
   inputDate.disabled = false;
   inputDate.style.cursor = 'pointer';
-  userSelectedDate = null;
 });

@@ -10,13 +10,13 @@ form.addEventListener('submit', evt => {
   makePromise({ delay, state })
     .then(() => {
       iziToast.success({
-        message: `✅ Fulfilled promise in ${delay}ms`,
+        message: `Fulfilled promise in ${delay}ms`,
         position: 'topRight',
       });
     })
     .catch(() => {
       iziToast.error({
-        message: `❌ Rejected promise in ${delay}ms`,
+        message: `Rejected promise in ${delay}ms`,
         position: 'topRight',
       });
     });
